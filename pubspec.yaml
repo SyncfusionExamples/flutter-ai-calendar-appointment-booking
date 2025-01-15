@@ -1,0 +1,31 @@
+name: ai_calendar
+description: "AI Calendar Flutter project."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.6.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  syncfusion_flutter_calendar: ^28.1.36
+  syncfusion_flutter_chat: ^28.1.36
+  google_generative_ai: any
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^5.0.0
+
+flutter:
+
+
+  uses-material-design: true
+  assets:
+     - images/People_Circle8.png
+     - images/People_Circle25.png
+     - images/ai_assist_view.png
