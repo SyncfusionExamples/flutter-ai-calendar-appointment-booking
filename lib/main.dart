@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:intl/intl.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:syncfusion_flutter_chat/assist_view.dart';
-import 'package:intl/intl.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -36,7 +36,8 @@ class _AICalendarState extends State<_AICalendar>
   final AssistMessageAuthor _user = const AssistMessageAuthor(
     id: '8ob3-b720-g9s6-25s8',
     name: 'Farah',
-  );  final AssistMessageAuthor _ai = const AssistMessageAuthor(
+  );
+  final AssistMessageAuthor _ai = const AssistMessageAuthor(
     id: '8ob3-b720-g9s6-25s0',
     name: 'AI',
   );
@@ -44,7 +45,6 @@ class _AICalendarState extends State<_AICalendar>
   late AnimationController _controller;
   late Animation<double> _animation;
   late List<AssistMessage> _messages;
-  late TextEditingController _textController;
   Key _assistViewKey = UniqueKey();
   bool _isLoading = false;
   bool _isPressed = false;
@@ -59,7 +59,7 @@ class _AICalendarState extends State<_AICalendar>
   String _subject = '';
   Color _primaryColor = Colors.transparent;
   Brightness _brightness = Brightness.light;
-  // Add your API key here to communicate with AI. 
+  // Add your API key here to communicate with AI.
   final String _assistApiKey = '';
   final String _appointmentBooked =
       'Your appointment has been successfully booked';
@@ -74,8 +74,6 @@ class _AICalendarState extends State<_AICalendar>
       _resources,
     );
 
-    // Assistview text handling.
-    _textController = TextEditingController()..addListener(_handleTextChange);
     _messages = <AssistMessage>[];
     // AI animated button.
     _controller = AnimationController(
@@ -126,10 +124,9 @@ class _AICalendarState extends State<_AICalendar>
                       child: Container(
                         width: sidebarWidth,
                         decoration: BoxDecoration(
-                          color:
-                              _brightness == Brightness.light
-                                  ? const Color(0xFFFFFBFE)
-                                  : const Color(0xFF1C1B1F),
+                          color: _brightness == Brightness.light
+                              ? const Color(0xFFFFFBFE)
+                              : const Color(0xFF1C1B1F),
                           border: Border.all(color: Colors.grey, width: 0.5),
                           boxShadow: [
                             BoxShadow(
@@ -159,8 +156,7 @@ class _AICalendarState extends State<_AICalendar>
                                       style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
-                                        color: _brightness ==
-                                                Brightness.light
+                                        color: _brightness == Brightness.light
                                             ? Colors.white
                                             : Colors.black,
                                       ),
@@ -170,20 +166,20 @@ class _AICalendarState extends State<_AICalendar>
                                         IconButton(
                                           icon: Icon(
                                             Icons.autorenew,
-                                            color: _brightness ==
-                                                    Brightness.light
-                                                ? Colors.white
-                                                : Colors.black,
+                                            color:
+                                                _brightness == Brightness.light
+                                                    ? Colors.white
+                                                    : Colors.black,
                                           ),
                                           onPressed: _refreshView,
                                         ),
                                         IconButton(
                                           icon: Icon(
                                             Icons.close,
-                                            color:_brightness ==
-                                                    Brightness.light
-                                                ? Colors.white
-                                                : Colors.black,
+                                            color:
+                                                _brightness == Brightness.light
+                                                    ? Colors.white
+                                                    : Colors.black,
                                           ),
                                           onPressed: _toggleSidebar,
                                         ),
@@ -292,52 +288,6 @@ class _AICalendarState extends State<_AICalendar>
     );
   }
 
-  Widget _buildComposer(BuildContext context) {
-    return TextField(
-      maxLines: 5,
-      minLines: 1,
-      controller: _textController,
-      decoration: InputDecoration(
-        fillColor: Theme.of(context).colorScheme.surfaceContainer,
-        filled: true,
-        hintText: 'Type here...',
-        border: const UnderlineInputBorder(),
-        suffixIcon: IconButton(
-          icon: Icon(
-            Icons.send,
-            color: _textController.text.isNotEmpty
-                ? Theme.of(context).colorScheme.primary
-                : const Color(0xFF9E9E9E),
-          ),
-          onPressed: _textController.text.isNotEmpty
-              ? () {
-                  setState(() {
-                    _messages.add(
-                      AssistMessage.request(
-                        time: DateTime.now(),
-                        author: _user,
-                        data: _textController.text,
-                      ),
-                    );
-                    _showButtons = false;
-                    _generateAIResponse(_textController.text);
-                    _textController.clear();
-                  });
-                }
-              : null,
-        ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 20,
-          vertical: 16,
-        ),
-      ),
-    );
-  }
-
-  void _handleTextChange() {
-    setState(() {});
-  }
-
   ElevatedButton _buildManagerView(
     BuildContext context,
     BoxConstraints constraints,
@@ -369,12 +319,12 @@ class _AICalendarState extends State<_AICalendar>
                   ? 'Book \n review meeting with \n Manager $_name'
                   : 'Book review meeting \n with Manager $_name',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: _brightness == Brightness.light
-                    ? Colors.black
-                    : Colors.white,
-              ),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: _brightness == Brightness.light
+                        ? Colors.black
+                        : Colors.white,
+                  ),
               textAlign: TextAlign.center,
             ),
           ),
@@ -406,105 +356,42 @@ class _AICalendarState extends State<_AICalendar>
   }
 
   void _convertAIResponse(String response) {
-    {
-      // Split the details from the response
-      final List<String> lines = response.split('\n');
-      // Create a map to store the information
-      final Map<String, String> appointmentDetails = {};
-      // Iterate over the lines to store them in the map
-      for (final String line in lines) {
-        if (line.contains('=')) {
-          final List<String> parts = line.split(' = ');
-          appointmentDetails[parts[0].trim()] = parts[1].trim();
-        }
+    // Split the details from the response
+    final List<String> lines = response.split('\n');
+    // Create a map to store the information
+    final Map<String, String> appointmentDetails = {};
+    // Iterate over the lines to store them in the map
+    for (final String line in lines) {
+      if (line.contains('=')) {
+        final List<String> parts = line.split(' = ');
+        appointmentDetails[parts[0].trim()] = parts[1].trim();
       }
-      String startTime;
-      String date;
-      setState(
-        () {
-          _managerName = appointmentDetails['ManagerName']!;
-          _appointmentTime = appointmentDetails['Time']!;
-          startTime = _appointmentTime.split(' - ')[0].toUpperCase();
-          _appointmentTime = startTime;
-          date = appointmentDetails['Date']!;
-          _appointmentBookedTimes.add(date);
-          final DateFormat dateFormat = DateFormat('dd-MM-yyyy h:mm a');
-          _selectedDateTime = dateFormat.parse('$date $startTime');
-          _subject = appointmentDetails['MeetingAgenta']!;
-          if (_managerName.isNotEmpty &&
-              _appointmentTime.isNotEmpty &&
-              _subject.isNotEmpty) {
-            _confirmAppointmentWithEmployee();
-          }
-        },
-      );
     }
+    String startTime;
+    String date;
+    setState(
+      () {
+        _managerName = appointmentDetails['ManagerName']!;
+        _appointmentTime = appointmentDetails['Time']!;
+        startTime = _appointmentTime.split(' - ')[0].toUpperCase();
+        _appointmentTime = startTime;
+        date = appointmentDetails['Date']!;
+        _appointmentBookedTimes.add(date);
+        final DateFormat dateFormat = DateFormat('dd-MM-yyyy h:mm a');
+        _selectedDateTime = dateFormat.parse('$date $startTime');
+        _subject = appointmentDetails['MeetingAgenta']!;
+        if (_managerName.isNotEmpty &&
+            _appointmentTime.isNotEmpty &&
+            _subject.isNotEmpty) {
+          _confirmAppointmentWithEmployee();
+        }
+      },
+    );
   }
 
   void _confirmAppointmentWithEmployee() {
     _selectedAppointment = null;
-    final DateTime now = DateTime.now();
-    DateTime dateTime = DateTime.now();
-    switch (_appointmentTime) {
-      case '9 AM':
-      case '9:00 AM':
-        dateTime = DateTime(now.year, now.month, now.day, 9);
-        break;
-      case '9:30 AM':
-        dateTime = DateTime(now.year, now.month, now.day, 9, 30);
-        break;
-      case '10 AM':
-      case '10:00 AM':
-        dateTime = DateTime(now.year, now.month, now.day, 10);
-        break;
-      case '10:30 AM':
-      case '10.30 AM':
-        dateTime = DateTime(now.year, now.month, now.day, 10, 30);
-        break;
-      case '11 AM':
-      case '11:00 AM':
-        dateTime = DateTime(now.year, now.month, now.day, 11);
-        break;
-      case '11:30 AM':
-      case '11.30 AM':
-        dateTime = DateTime(now.year, now.month, now.day, 11, 30);
-      case '12 PM':
-      case '12:00 PM':
-        dateTime = DateTime(now.year, now.month, now.day, 12);
-        break;
-      case '12:30 PM':
-      case '12.30 PM':
-        dateTime = DateTime(now.year, now.month, now.day, 12, 30);
-        break;
-      case '2 PM':
-      case '2:00 PM':
-        dateTime = DateTime(now.year, now.month, now.day, 14);
-        break;
-      case '2:30 PM':
-      case '2.30 PM':
-        dateTime = DateTime(now.year, now.month, now.day, 14, 30);
-        break;
-      case '3 PM':
-      case '3:00 PM':
-        dateTime = DateTime(now.year, now.month, now.day, 15);
-        break;
-      case '3:30 PM':
-      case '3.30 PM':
-        dateTime = DateTime(now.year, now.month, now.day, 15, 30);
-        break;
-      case '4 PM':
-      case '4:00 PM':
-        dateTime = DateTime(now.year, now.month, now.day, 16);
-        break;
-      case '4:30 PM':
-      case '4.30 PM':
-        dateTime = DateTime(now.year, now.month, now.day, 16, 30);
-        break;
-      case '5 PM':
-      case '5:00 PM':
-        dateTime = DateTime(now.year, now.month, now.day, 17);
-        break;
-    }
+
     final selectedResource = _resources.firstWhere(
         (resource) => resource.displayName == _managerName,
         orElse: () => _resources.first);
@@ -693,6 +580,7 @@ class _AICalendarState extends State<_AICalendar>
         endHour: 17,
         dayFormat: 'EEEE',
         dateFormat: 'dd',
+        numberOfDaysInView: 3,
       ),
       dataSource: calendarDataSource,
     );
@@ -731,9 +619,21 @@ class _AICalendarState extends State<_AICalendar>
           decoration: TextDecoration.none,
         ),
       ),
-      composer: AssistComposer.builder(
-        builder: (BuildContext context) {
-          return _buildComposer(context);
+      actionButton: AssistActionButton(
+        onPressed: (String newMessage) {
+          setState(
+            () {
+              _messages.add(
+                AssistMessage.request(
+                  time: DateTime.now(),
+                  author: _user,
+                  data: newMessage,
+                ),
+              );
+              _showButtons = false;
+              _generateAIResponse(newMessage);
+            },
+          );
         },
       ),
     );
@@ -743,7 +643,6 @@ class _AICalendarState extends State<_AICalendar>
   void dispose() {
     _messages.clear();
     _controller.dispose();
-    _textController.dispose();
     _events.appointments!.clear();
     _scheduledAppointments.clear();
     _resources.clear();
